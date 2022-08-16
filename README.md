@@ -1,6 +1,43 @@
-## Laravel Matomo
+# Laravel Matomo
 
-### Documentation and examples 
+## About
+
+The `7span/laravel-matomo` Laravel package is connect matomo using basic api and gives you the json for the perpare your dashboard.
+
+## Features
+
+ * Create site in matomo.
+ * Get analytic data using site id.
+ * Get paged data using site id and page label.
+ * Remove site in matomo.
+
+## Installation
+
+Via Composer
+
+Require the `7span/laravel-matomo` package in your `composer.json` and update your dependencies:
+``` bash
+$ composer require 7span/laravel-matomo
+```
+
+Publish the config file (optional)
+
+Run `php artisan vendor:publish` to publish the config file if needed.
+``` bash
+$ php artisan vendor:publish
+```
+
+Update your `.env`
+
+Add these variables to your `.env` file and configure it to fit your environment.
+``` bash
+MATOMO_API_URL="https://your.matomo-install.com"
+MATOMO_TOKEN="00112233445566778899aabbccddeeff"
+```
+
+That's it!
+
+## Documentation and examples 
 ```php
 // Load object
 use Matomo;
