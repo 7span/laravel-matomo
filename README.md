@@ -42,13 +42,8 @@ That's it!
 // Load object
 use Matomo;
 
-// Required variables
-$matomoUrl = "https://analytics.7span.com/"; // Your matomo URL
-$matomoToken = "";                  // Your authentication token
-
 // Matomo object
-$matomo = new Matomo($matomoUrl);
-$matomo->setTokenAuth($matomoToken);
+$matomo = new Matomo();
 
 $matomoAddSiteObject = [
     "method" => "SitesManager.addSite",
