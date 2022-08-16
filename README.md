@@ -71,4 +71,24 @@ Failer response of matomo add site.
     }
 }
 */
+
+// Create site in matomo
+$matomoSite = $matomo->deleteSite($matomoSiteId);
+return $matomoSite;
+
+/*
+Success response of matomo add site.
+{
+    "status":"success",
+    "statusCode":"200"
+}
+Failer response of matomo add site.
+{
+    "status":"fail",
+    "statusCode":"400",
+    "error"{
+        "message":"Message of the error massage"
+    }
+}
+*/
 ```
