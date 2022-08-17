@@ -46,7 +46,7 @@ use Matomo;
 $matomo = new Matomo();
 
 $matomoAddSiteObject = [
-    "siteName" => "7Span%20Campaign%20-%20001", // urlencode('7Span Campaign - 001')
+    "siteName" => "7Span Campaign - 001",
 ];
 // Create site in matomo
 $matomoSite = $matomo->addSite($matomoAddSiteObject);
