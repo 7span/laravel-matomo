@@ -1,0 +1,70 @@
+{
+    "name": "sevenspan/laravel-matomo",
+    "description": "It provide laravel matomo support.",
+    "keywords": [
+        "laravel",
+        "laravel-matomo",
+        "laravel-matomo",
+        "matomo"
+    ],
+    "homepage": "https://github.com/7span/laravel-matomo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nikunj Gadhiya",
+            "email": "nikunjpgadhiya@gmail.com",
+            "homepage": "https://github.com/nikunj320",
+            "role": "Developer"
+        },
+        {
+            "name": "Hemratna Bhimani",
+            "email": "hemratna.bhimani@gmail.com",
+            "homepage": "https://github.com/hemratna",
+            "role": "Developer"
+        },
+        {
+            "name": "Keval Ajmera",
+            "email": "kevalhajmera4151@gmail.com",
+            "homepage": "https://github.com/7span/laravel-matomo",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5||^8.0"
+    },
+    "require-dev": {
+        "psalm/plugin-laravel": "^1.2",
+        "vimeo/psalm": "^3.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "SevenSpan\\Matomo\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SevenSpan\\Matomo\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "psalm": "vendor/bin/psalm"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "SevenSpan\\Matomo\\Providers\\MatomoServiceProvider"
+            ],
+            "aliases": {
+                "Matomo": "SevenSpan\\Matomo\\Facades\\Matomo"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

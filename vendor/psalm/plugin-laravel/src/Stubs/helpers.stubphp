@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @template TModel of \Illuminate\Database\Eloquent\Model
+ * @template TNameOrCountOrNull of string|int|null
+ * @template TCountOrNull of int|null
+ *
+ * @param class-string<TModel> $modelClassName
+ * @param TNameOrCountOrNull $nameOrCount
+ * @param TCountOrNull $count
+ *
+ * @return (
+        TCountOrNull is int
+            ? Illuminate\Database\Eloquent\FactoryBuilder<TModel, TCountOrNull>
+            : (
+                TNameOrCountOrNull is int
+                    ? Illuminate\Database\Eloquent\FactoryBuilder<TModel, TNameOrCountOrNull>
+                    : Illuminate\Database\Eloquent\FactoryBuilder<TModel, 1>
+            )
+
+    )
+ */
+function factory(string $modelClassName, $nameOrCount = null, $count = null)
+{
+
+}
+
+/**
+* Return a new response from the application.
+*
+* @param  \Illuminate\View\View|string|array|null  $content
+* @param  int     $status
+* @param  array   $headers
+* @return \Illuminate\Http\Response|\Illuminate\Contracts\Routing\ResponseFactory
+* @psalm-return (func_num_args() is 0 ? \Illuminate\Contracts\Routing\ResponseFactory : \Illuminate\Http\Response)
+*/
+function response($content = '', $status = 200, array $headers = [])
+{
+
+}
+
+/**
+ * Throw an HttpException with the given data if the given condition is true.
+ *
+ * @param  bool  $boolean
+ * @psalm-assert falsy $boolean
+ * @psalm-return never-return
+ * @param  int  $code
+ * @param  string  $message
+ * @param  array  $headers
+ * @return void
+ *
+ * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+ * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+ */
+function abort_if($boolean, $code, $message = '', array $headers = [])
+{
+
+}
