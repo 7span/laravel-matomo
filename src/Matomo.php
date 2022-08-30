@@ -396,6 +396,56 @@ class Matomo implements MatomoInterface
     }
 
     /**
+     * @param int $matomoAnalyticsId
+     * 
+     * @param string $slug
+     * 
+     * @param string $period
+     *
+     * @param string $date
+     *
+     * @param boolean $isSubPage
+     * 
+     * @return array|mixed
+     */
+    public static function getPagedCount($matomoAnalyticsId, $slug, $period, $date, $isSubPage = false){
+        $label = MatomoHelper::convertLabelFromSlug($slug, $isSubPage);
+        $apiParams = [
+            'method' => 'API.getProcessedReport',
+            'apiModule' => 'Actions',
+            'apiAction' => 'getPageUrls',
+            'idSite' => $matomoAnalyticsId,
+            'period' => $period,
+            'date' => $date,
+            'token_auth' =>  config('matomo.token'),
+            'module'=> 'API',
+            'format' => 'json',
+            'label' => $label
+        ];
+        $result = [
+            'total' => 0,
+            'unique' => 0,
+            'bounce_rate' => 0,
+            'avg_time_on_page' => 0,
+            'exit_rate' => 0,
+        ];
+        $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
+        $matomoResponse = MatomoHelper::callApi($apiEndpoint);
+        MatomoHelper::parseMatomoResponse($matomoResponse);
+        $matomoResponse = json_decode($matomoResponse, true);
+        if (isset($matomoResponse['reportData'])) {
+            $result = [
+                'total' => $matomoResponse['reportData'][0]['nb_hits'],
+                'unique' => $matomoResponse['reportData'][0]['nb_visits'],
+                'bounce_rate' => $matomoResponse['reportData'][0]['bounce_rate'],
+                'avg_time_on_page' => $matomoResponse['reportData'][0]['avg_time_on_page'],
+                'exit_rate' => $matomoResponse['reportData'][0]['exit_rate']
+            ];
+        }
+        return $result;
+    }
+
+    /**
      * @param string $data
      * 
      * @param int $matomoAnalyticsId

@@ -75,4 +75,19 @@ interface MatomoInterface
      * @return array|mixed
      */
     public static function getFormSubmitCount($matomoAnalyticsId, $period, $date);
+
+    /**
+     * @param int $matomoAnalyticsId
+     * 
+     * @param string $slug
+     * 
+     * @param string $period
+     *
+     * @param string $date
+     *
+     * @param boolean $isSubPage
+     * 
+     * @return array|mixed
+     */
+    public static function getPagedCount($matomoAnalyticsId, $slug, $period, $date, $isSubPage = false);
 }
