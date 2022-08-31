@@ -75,4 +75,28 @@ interface MatomoInterface
      * @return array|mixed
      */
     public static function getFormSubmitCount($matomoAnalyticsId, $period, $date);
+
+     /**
+     * @param string $data
+     * 
+     * @param string $period
+     * 
+     * @param int $matomoAnalyticsId
+     *
+     * @return array|mixed
+     */
+    public static function getDeviceWiseReport(int $matomoAnalyticsId, string $period, string $date);
+
+     /**
+     * @param string $data
+     * 
+     * @param string $period
+     * 
+     * @param int|null $matomoAnalyticsId
+     *
+     * @param string $formSubmissionCount
+     *
+     * @return array|mixed
+     */
+    public static function getCounterReport(int $matomoAnalyticsId, string $period, string $date, int $formSubmissionCount = null);
 }
