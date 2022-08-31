@@ -40,54 +40,52 @@ That's it!
 ## Documentation and examples 
 ```php
 // Load object
-use Matomo;
+use SevenSpan\Matomo\Facades\Matomo;
 
-// Matomo object
-$matomo = new Matomo();
+Add Site
 
-$matomoAddSiteObject = [
-    "siteName" => "7Span Campaign - 001",
-];
-// Create site in matomo
-$matomoSite = $matomo->addSite($matomoAddSiteObject);
-return $matomoSite;
+$siteName = "Campaign - 1212121212";
+$response =  Matomo::addSite($siteName);
+return $response;
 
-/*
-Success response of matomo add site.
-{
-    "status":"success",
-    "statusCode":"200",
-    "data"{
-        "siteId":1
-    }
-}
-Failer response of matomo add site.
-{
-    "status":"fail",
-    "statusCode":"400",
-    "error"{
-        "message":"Message of the error massage"
-    }
-}
-*/
+Remove site
 
-// Create site in matomo
-$matomoSite = $matomo->deleteSite($matomoSiteId);
-return $matomoSite;
+$response =  Matomo::removeSite($matomoAnalyticsId);
+return $response;
 
-/*
-Success response of matomo add site.
-{
-    "status":"success",
-    "statusCode":"200"
-}
-Failer response of matomo add site.
-{
-    "status":"fail",
-    "statusCode":"400",
-    "error"{
-        "message":"Message of the error massage"
-    }
-}
-*/
-```
+Get visters data daywise
+
+$matomoAnalyticsId = 16234;
+$period = "day";
+$date = "2022-07-01,today"; //lastweek, lastMonth, lastYear
+$response =  Matomo::getVisitorsData($matomoAnalyticsId, $period, $date);
+return $response;
+
+Get page wise view count using range filter
+
+$matomoAnalyticsId = 15744;
+$period = "range";
+$date = "2021-01-01,today";
+$response =  Matomo::getPageWiseViewCount($matomoAnalyticsId, $period, $date);
+
+Get product page visit count using range filter
+
+$matomoAnalyticsId = 15744;
+$period = "range";
+$date = "2021-01-01,today";
+$response =  Matomo::getProductPageVisitCount($matomoAnalyticsId, $period, $date);
+
+Get country wise data using day
+
+$matomoAnalyticsId = 15744;
+$period = "day";
+$date = "2022-08-01,today"; //lastweek, lastMonth, lastYear
+$response =  Matomo::getCountryWise($matomoAnalyticsId, $period, $date);
+
+GetBrowserWise using day
+
+$matomoAnalyticsId = 15744;
+$period = "day";
+$date = "2022-08-01,today"; //lastweek, lastMonth, lastYear
+$response =  Matomo::getBrowserWiseReport($matomoAnalyticsId, $period, $date);
+return $response;
