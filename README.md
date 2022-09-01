@@ -2,90 +2,92 @@
 
 ## About
 
-The `7span/laravel-matomo` Laravel package is connect matomo using basic api and gives you the json for the perpare your dashboard.
+The `7span/laravel-matomo` laravel package is connect your project with matomo analytics tool and by using basic api of matomo gives you the json data for your dashboard.
 
-## Features
+## Usages
 
  * Create site in matomo.
- * Get analytic data using site id.
- * Get paged data using site id and page label.
  * Remove site in matomo.
+ * Get visitor analytic data using site id.
+ * Get paged analytic data using site id.
+ * Get product page visit count analytic data using site id.
+ * Get country wise analytic data using site id.
+ * Get browser wise analytic data using site id.
 
 ## Installation
 
 Via Composer
 
-Require the `7span/laravel-matomo` package in your `composer.json` and update your dependencies:
-``` bash
-$ composer require 7span/laravel-matomo
-```
+Run `composer require 7span/laravel-matomo` in your terminal to install the package or require `7span/laravel-matomo` package inyour composer json and install the package
+
 
 Publish the config file (optional)
 
-Run `php artisan vendor:publish` to publish the config file if needed.
-``` bash
-$ php artisan vendor:publish
+Run publish command to copy the matomo config file in your project.
+
+```
+php artisan vendor:publish --provider="SevenSpan\Matomo\Providers\MatomoServiceProvider" --tag="config"
 ```
 
-Update your `.env`
+Add your matomo configurations in the config file
 
-Add these variables to your `.env` file and configure it to fit your environment.
-``` bash
-MATOMO_API_URL="https://your.matomo-install.com"
-MATOMO_TOKEN="00112233445566778899aabbccddeeff"
+```
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Matomo API URI
+    |--------------------------------------------------------------------------
+    |
+    | Matomo API URI.
+    |
+    */
+
+    'api_uri' => env('MATOMO_API_URL', ''),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Matomo Token
+    |--------------------------------------------------------------------------
+    |
+    | Matomo Access Token.
+    |
+    */
+
+    'token' => env('MATOMO_TOKEN', '')
+
+];
 ```
 
-That's it!
+You are ready to go!
 
 ## Documentation and examples 
+
 ```php
+
 // Load object
 use SevenSpan\Matomo\Facades\Matomo;
 
-Add Site
+## Add Site
 
-$siteName = "Campaign - 1212121212";
-$response =  Matomo::addSite($siteName);
-return $response;
+// $siteName = "Campaign - 1212121212"; (Required)
+Matomo::addSite($siteName);
 
-Remove site
+## Remove site
 
-$response =  Matomo::removeSite($matomoAnalyticsId);
-return $response;
+// $matomoAnalyticsId = 1234; (Required)
+Matomo::removeSite($matomoAnalyticsId);
 
-Get visters data daywise
+## Get visters data beetween range
 
-$matomoAnalyticsId = 16234;
-$period = "day";
-$date = "2022-07-01,today"; //lastweek, lastMonth, lastYear
-$response =  Matomo::getVisitorsData($matomoAnalyticsId, $period, $date);
-return $response;
+// $matomoAnalyticsId = 16234; (Required)
+// $dates = "2022-07-01, 2022-07-31"; (Required)
 
-Get page wise view count using range filter
+// Note : If you want to get data of month or year, you can pass related date array to $dates parameter.
 
-$matomoAnalyticsId = 15744;
-$period = "range";
-$date = "2021-01-01,today";
-$response =  Matomo::getPageWiseViewCount($matomoAnalyticsId, $period, $date);
-
-Get product page visit count using range filter
-
-$matomoAnalyticsId = 15744;
-$period = "range";
-$date = "2021-01-01,today";
-$response =  Matomo::getProductPageVisitCount($matomoAnalyticsId, $period, $date);
-
-Get country wise data using day
-
-$matomoAnalyticsId = 15744;
-$period = "day";
-$date = "2022-08-01,today"; //lastweek, lastMonth, lastYear
-$response =  Matomo::getCountryWise($matomoAnalyticsId, $period, $date);
-
-GetBrowserWise using day
-
-$matomoAnalyticsId = 15744;
-$period = "day";
-$date = "2022-08-01,today"; //lastweek, lastMonth, lastYear
-$response =  Matomo::getBrowserWiseReport($matomoAnalyticsId, $period, $date);
-return $response;
+Matomo::getVisitorsData($matomoAnalyticsId, $dates); // Get visitor data
+Matomo::getPageWiseViewCount($matomoAnalyticsId, $period, $dates); // Get page wise view count
+Matomo::getProductPageVisitCount($matomoAnalyticsId, $period, $dates); // Get product page visit count
+Matomo::getCountryWise($matomoAnalyticsId, $period, $dates); // Get country wise data
+Matomo::getBrowserWiseReport($matomoAnalyticsId, $period, $dates); // Get browser wise
