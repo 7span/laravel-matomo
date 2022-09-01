@@ -82,7 +82,7 @@ Matomo::removeSite($matomoAnalyticsId);
 ## Get visters data beetween range
 
 // $matomoAnalyticsId = 16234; (Required)
-// $dates = "2022-07-01, 2022-07-31"; (Required)
+// $dates = array("2022-07-01", "2022-07-31"); (Required)
 
 // Note : If you want to get data of month or year, you can pass related date array to $dates parameter.
 
