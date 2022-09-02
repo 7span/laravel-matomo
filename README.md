@@ -21,7 +21,7 @@ Via Composer
 Run `composer require 7span/laravel-matomo` in your terminal to install the package or require `7span/laravel-matomo` package inyour composer json and install the package
 
 
-Publish the config file (optional)
+Publish the config file
 
 Run publish command to copy the matomo config file in your project.
 
@@ -87,7 +87,7 @@ Matomo::removeSite($matomoAnalyticsId);
 // Note : If you want to get data of month or year, you can pass related date array to $dates parameter.
 
 Matomo::getVisitorsData($matomoAnalyticsId, $dates); // Get visitor data
-Matomo::getPageWiseViewCount($matomoAnalyticsId, $period, $dates); // Get page wise view count
-Matomo::getProductPageVisitCount($matomoAnalyticsId, $period, $dates); // Get product page visit count
-Matomo::getCountryWise($matomoAnalyticsId, $period, $dates); // Get country wise data
-Matomo::getBrowserWiseReport($matomoAnalyticsId, $period, $dates); // Get browser wise
+Matomo::getPageWiseViewCount($matomoAnalyticsId, $dates); // Get page wise view count
+Matomo::getProductPageVisitCount($matomoAnalyticsId, $dates); // Get product page visit count
+Matomo::getCountryWise($matomoAnalyticsId, $dates); // Get country wise data
+Matomo::getBrowserWiseReport($matomoAnalyticsId, $dates); // Get browser wise
