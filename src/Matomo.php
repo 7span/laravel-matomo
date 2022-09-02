@@ -26,8 +26,7 @@ class Matomo implements MatomoInterface
 
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         $data['status'] = 'success';
         $data['statusCode'] = 200;
         $data['data']['siteId'] = $matomoResponse['value'];
@@ -50,14 +49,13 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $response = MatomoHelper::callApi($apiEndpoint);
         $response = MatomoHelper::parseMatomoResponse($response);
-
+        $data['status'] = 'success';
+        $data['statusCode'] = 200;
         return $response;
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
@@ -65,12 +63,12 @@ class Matomo implements MatomoInterface
      *
      * Refrance https://developer.matomo.org/api-reference/reporting-api
      */
-    public static function getVisitorsData(int $matomoAnalyticsId, string $period, string $date)
+    public static function getVisitorsData(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'apiModule' => 'VisitsSummary',
@@ -79,59 +77,19 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = [];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportData'])) {
             $reportData = $matomoResponse['reportData'];
-            if ($period === 'range') {
-                $temp[] = $reportData;
-                $reportData = [];
-                $reportData = $temp;
-            }
             foreach ($reportData as $k => $d) {
                 if (!empty($d)) {
-                    if ($period === 'day') {
-                        $date = MatomoHelper::parseDateString($k);
-                        $temp = [
-                            'date' => strtotime($date),
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'week') {
-                        $temp = MatomoHelper::parseDateStringByWeek($k);
-                        $temp['count'] = $d['nb_visits'];
-                        $temp['percentage'] = 0.0;
-                        $temp['avg_time_on_site'] = $d['avg_time_on_site'];
-                        $data[] = $temp;
-                    } elseif ($period === 'month') {
-                        $temp = [
-                            'month' => preg_replace("/[^a-zA-Z]+/", "", $k),
-                            'year' => substr($k, -4),
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'year') {
-                        $temp = [
-                            'year' => $k,
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'range') {
-                        $temp = [
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } else {
-                        return null;
-                    }
+                    $temp = [
+                        'count' => $d['nb_visits'],
+                        'percentage' => 0.0,
+                        'avg_time_on_site' => $d['avg_time_on_site'],
+                    ];
+                    $data[] = $temp;
+                } else {
+                    return null;
                 }
             }
             $data = MatomoHelper::calculateTotalAndPercentage($data);
@@ -141,21 +99,19 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
-     * @param string $period
-     *
      * @return array|mixed
      */
-    public static function getPageWiseViewCount(int $matomoAnalyticsId, string $period, string $date)
+    public static function getPageWiseViewCount(int $matomoAnalyticsId, string $date)
     {
-        $views = self::getProcessedReport($matomoAnalyticsId, $period, $date);
+        $views = self::getProcessedReport($matomoAnalyticsId, $date);
         $data = [
             'total_page_views' => 0,
             'unique_page_views' => 0,
-            'product_page_views' => self::getProductPageVisitCount($matomoAnalyticsId, $period, $date)['product_page_views'],
+            'product_page_views' => self::getProductPageVisitCount($matomoAnalyticsId, $date)['product_page_views'],
         ];
 
         if (isset($views['unique_page_views'])) {
@@ -170,20 +126,18 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getCountryWiseReport(int $matomoAnalyticsId, string $period, string $date)
+    public static function getCountryWiseReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'apiModule' => 'UserCountry',
@@ -193,8 +147,7 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = [];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportData'])) {
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $d) {
@@ -212,20 +165,18 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getBrowserWiseReport(int $matomoAnalyticsId, string $period, string $date)
+    public static function getBrowserWiseReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'apiModule' => 'DevicesDetection',
@@ -234,66 +185,20 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = [];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportData'])) {
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $k => $d) {
                 if (!empty($d)) {
-                    if ($period === 'day') {
-                        foreach ($d as $v) {
-                            $date = MatomoHelper::parseDateString($k);
-                            $temp = [
-                                'date' => strtotime($date),
-                                'name' => $v['label'],
-                                'count' => $v['nb_visits'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $v['avg_time_on_site'],
-                            ];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'week') {
-                        foreach ($d as $v) {
-                            $temp = MatomoHelper::parseDateStringByWeek($k);
-                            $temp['name'] = $v['label'];
-                            $temp['count'] = $v['nb_visits'];
-                            $temp['percentage'] = 0.0;
-                            $temp['avg_time_on_site'] = $v['avg_time_on_site'];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'month') {
-                        foreach ($d as $v) {
-                            $temp = [
-                                'month' => preg_replace("/[^a-zA-Z]+/", "", $k),
-                                'year' => substr($k, -4),
-                                'name' => $v['label'],
-                                'count' => $v['nb_visits'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $v['avg_time_on_site'],
-                            ];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'year') {
-                        foreach ($d as $v) {
-                            $temp = [
-                                'year' => $k,
-                                'count' => $d['nb_visits'],
-                                'name' => $v['label'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $d['avg_time_on_site'],
-                            ];
-                        }
-                    } elseif ($period === 'range') {
-                        $temp = [
-                            'name' => $d['label'],
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } else {
-                        return null;
-                    }
+                    $temp = [
+                        'name' => $d['label'],
+                        'count' => $d['nb_visits'],
+                        'percentage' => 0.0,
+                        'avg_time_on_site' => $d['avg_time_on_site'],
+                    ];
+                    $data[] = $temp;
+                } else {
+                    return null;
                 }
             }
             $data = MatomoHelper::calculateTotalAndPercentage($data);
@@ -302,65 +207,57 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
-     * @param string $period
-     *
      * @return array|mixed
      */
-    public static function getProductPageVisitCount($matomoAnalyticsId, $period, $date)
+    public static function getProductPageVisitCount(int $matomoAnalyticsId, string $date)
     {
-        $data['product_page_views'] = self::getContentCount('Product+Page', $matomoAnalyticsId, $period, $date);
+        $data['product_page_views'] = self::getContentCount('Product+Page', $matomoAnalyticsId, $date);
         return $data;
     }
 
     /**
-     * @param string $data
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
-     * @param string $period
-     *
      * @return array|mixed
      */
-    public static function getCouponRedemptionCount($matomoAnalyticsId, $period, $date)
+    public static function getCouponRedemptionCount(int $matomoAnalyticsId, string $date)
     {
-        $data['coupon_redemption_views'] = self::getContentCount('Product+Page', $matomoAnalyticsId, $period, $date);
+        $data['coupon_redemption_views'] = self::getContentCount('Coupon+Redemption', $matomoAnalyticsId, $date);
         return $data;
     }
 
     /**
-     * @param string $data
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
-     * @param string $period
-     *
      * @return array|mixed
      */
-    public static function getFormSubmitCount($matomoAnalyticsId, $period, $date)
+    public static function getFormSubmitCount(int $matomoAnalyticsId, string $date)
     {
-        $data['form_submit_views'] = self::getContentCount('Product+Page', $matomoAnalyticsId, $period, $date);
+        $data['form_submit_views'] = self::getContentCount('Form+Submit', $matomoAnalyticsId, $date);
         return $data;
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getDeviceWiseReport(int $matomoAnalyticsId, string $period, string $date)
+    public static function getDeviceWiseReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'apiModule' => 'DevicesDetection',
@@ -369,8 +266,7 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = [];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportData'])) {
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $d) {
@@ -388,20 +284,18 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getDayWiseReport(int $matomoAnalyticsId, string $period, string $date)
+    public static function getDayWiseReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'day',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'apiModule' => 'VisitsSummary',
@@ -411,8 +305,7 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = [];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportData'])) {
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $k => $d) {
@@ -433,9 +326,7 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
@@ -443,14 +334,14 @@ class Matomo implements MatomoInterface
      *
      * @return array|mixed
      */
-    public static function getCounterReport(int $matomoAnalyticsId, string $period, string $date, int $formSubmissionCount = null)
+    public static function getCounterReport(int $matomoAnalyticsId, string $date, int $formSubmissionCount = null)
     {
-        $views = $views = self::getProcessedReport($matomoAnalyticsId, $period, $date);
+        $views = $views = self::getProcessedReport($matomoAnalyticsId, $date);
         $data = [
             'views' => 0,
             'unique_views' => 0,
             'form_submissions' => $formSubmissionCount,
-            'product_page_views' => self::getProductPageVisitCount($matomoAnalyticsId, $period, $date)['product_page_views'],
+            'product_page_views' => self::getProductPageVisitCount($matomoAnalyticsId, $date)['product_page_views'],
             // 'coupons_redeemed' => $this->matomo->campaign->couponRedeemers()->count() ,
             'conversation_ratio' => '0%',
         ];
@@ -467,22 +358,20 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
-     * @param string $period
-     *
      * @return array|mixed
      */
-    private function getProcessedReport(int $matomoAnalyticsId, string $period, string $date)
+    private function getProcessedReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'apiModule' => 'API',
             'apiAction' => 'get',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
         ];
@@ -492,9 +381,7 @@ class Matomo implements MatomoInterface
             'unique_page_views' => 0,
         ];
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
-
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['reportTotal'])) {
             $data = [
                 'total_page_views' => $matomoResponse['reportTotal']['nb_pageviews'],
@@ -506,9 +393,7 @@ class Matomo implements MatomoInterface
     }
 
     /**
-     * @param string $data
-     *
-     * @param string $period
+     * @param string $date
      *
      * @param int $matomoAnalyticsId
      *
@@ -519,14 +404,14 @@ class Matomo implements MatomoInterface
      * https://analytics.page-maker.site/?module=API&method=Contents.getContentNames&idSite=32&period=range&date=2020-07-07,today&format=json&token_auth=c1752db0f01c3f9e4bd18e0bc2fafbc3&label=Product+Page
      * Use the reportTotal from the response as it is all pre calculated
      */
-    private function getContentCount($contentName, int $matomoAnalyticsId, string $period, string $date)
+    private function getContentCount($contentName, int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'Contents.getContentNames',
             'apiModule' => 'API',
             'apiAction' => 'get',
             'idSite' => $matomoAnalyticsId,
-            'period' => $period,
+            'period' => 'range',
             'date' => $date,
             'token_auth' => config('matomo.token'),
             'label' => $contentName,
@@ -534,8 +419,7 @@ class Matomo implements MatomoInterface
         $apiEndpoint = config('matomo.api_uri') . MatomoHelper::generateApiParamStr($apiParams);
         $data = 0;
         $matomoResponse = MatomoHelper::callApi($apiEndpoint);
-        MatomoHelper::parseMatomoResponse($matomoResponse);
-        $matomoResponse = json_decode($matomoResponse, true);
+        $matomoResponse = MatomoHelper::parseMatomoResponse($matomoResponse);
         if (isset($matomoResponse['0']) && !empty($matomoResponse)) {
             $matomoResponse = $matomoResponse['0'];
             if (isset($matomoResponse['segment']) && $matomoResponse['segment'] === 'contentName==' . $contentName) {
