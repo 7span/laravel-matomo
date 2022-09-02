@@ -21,76 +21,80 @@ interface MatomoInterface
     public function removeSite(int $matomoAnalyticsId);
 
     /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date 
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      * 
      */
-    public static function getVisitorsData(int $matomoAnalyticsId, string $period, string $date);
+    public static function getVisitorsData(int $matomoAnalyticsId, string $date);
 
     /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getPageWiseViewCount(int $matomoAnalyticsId, string $period, string $date);
+    public static function getPageWiseViewCount(int $matomoAnalyticsId, string $date);
 
     /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getProductPageVisitCount($matomoAnalyticsId, $period, $date);
+    public static function getCountryWiseReport(int $matomoAnalyticsId, string $date);
 
     /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getCouponRedemptionCount($matomoAnalyticsId, $period, $date);
+    public static function getBrowserWiseReport(int $matomoAnalyticsId, string $date);
 
     /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getFormSubmitCount($matomoAnalyticsId, $period, $date);
+    public static function getProductPageVisitCount(int $matomoAnalyticsId, string $date);
+
+    /**
+     * @param string $date
+     * 
+     * @param int $matomoAnalyticsId
+     *
+     * @return array|mixed
+     */
+    public static function getCouponRedemptionCount(int $matomoAnalyticsId, string $date);
+
+    /**
+     * @param string $date
+     * 
+     * @param int $matomoAnalyticsId
+     *
+     * @return array|mixed
+     */
+    public static function getFormSubmitCount(int $matomoAnalyticsId, string $date);
 
      /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int $matomoAnalyticsId
      *
      * @return array|mixed
      */
-    public static function getDeviceWiseReport(int $matomoAnalyticsId, string $period, string $date);
+    public static function getDeviceWiseReport(int $matomoAnalyticsId, string $date);
 
      /**
-     * @param string $data
-     * 
-     * @param string $period
+     * @param string $date
      * 
      * @param int|null $matomoAnalyticsId
      *
@@ -98,5 +102,5 @@ interface MatomoInterface
      *
      * @return array|mixed
      */
-    public static function getCounterReport(int $matomoAnalyticsId, string $period, string $date, int $formSubmissionCount = null);
+    public static function getCounterReport(int $matomoAnalyticsId, string $date, int $formSubmissionCount = null);
 }
