@@ -65,7 +65,6 @@ class Matomo implements MatomoInterface
      */
     public static function getVisitorsData(int $matomoAnalyticsId, string $date)
     {
-        $period = 'range';
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
@@ -83,48 +82,14 @@ class Matomo implements MatomoInterface
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $k => $d) {
                 if (!empty($d)) {
-                    if ($period === 'day') {
-                        $date = MatomoHelper::parseDateString($k);
-                        $temp = [
-                            'date' => strtotime($date),
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'week') {
-                        $temp = MatomoHelper::parseDateStringByWeek($k);
-                        $temp['count'] = $d['nb_visits'];
-                        $temp['percentage'] = 0.0;
-                        $temp['avg_time_on_site'] = $d['avg_time_on_site'];
-                        $data[] = $temp;
-                    } elseif ($period === 'month') {
-                        $temp = [
-                            'month' => preg_replace("/[^a-zA-Z]+/", "", $k),
-                            'year' => substr($k, -4),
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'year') {
-                        $temp = [
-                            'year' => $k,
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } elseif ($period === 'range') {
-                        $temp = [
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } else {
-                        return null;
-                    }
+                    $temp = [
+                        'count' => $d['nb_visits'],
+                        'percentage' => 0.0,
+                        'avg_time_on_site' => $d['avg_time_on_site'],
+                    ];
+                    $data[] = $temp;
+                } else {
+                    return null;
                 }
             }
             $data = MatomoHelper::calculateTotalAndPercentage($data);
@@ -208,7 +173,6 @@ class Matomo implements MatomoInterface
      */
     public static function getBrowserWiseReport(int $matomoAnalyticsId, string $date)
     {
-        $period = 'range';
         $apiParams = [
             'method' => 'API.getProcessedReport',
             'idSite' => $matomoAnalyticsId,
@@ -226,60 +190,15 @@ class Matomo implements MatomoInterface
             $reportData = $matomoResponse['reportData'];
             foreach ($reportData as $k => $d) {
                 if (!empty($d)) {
-                    if ($period === 'day') {
-                        foreach ($d as $v) {
-                            $date = MatomoHelper::parseDateString($k);
-                            $temp = [
-                                'date' => strtotime($date),
-                                'name' => $v['label'],
-                                'count' => $v['nb_visits'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $v['avg_time_on_site'],
-                            ];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'week') {
-                        foreach ($d as $v) {
-                            $temp = MatomoHelper::parseDateStringByWeek($k);
-                            $temp['name'] = $v['label'];
-                            $temp['count'] = $v['nb_visits'];
-                            $temp['percentage'] = 0.0;
-                            $temp['avg_time_on_site'] = $v['avg_time_on_site'];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'month') {
-                        foreach ($d as $v) {
-                            $temp = [
-                                'month' => preg_replace("/[^a-zA-Z]+/", "", $k),
-                                'year' => substr($k, -4),
-                                'name' => $v['label'],
-                                'count' => $v['nb_visits'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $v['avg_time_on_site'],
-                            ];
-                            $data[] = $temp;
-                        }
-                    } elseif ($period === 'year') {
-                        foreach ($d as $v) {
-                            $temp = [
-                                'year' => $k,
-                                'count' => $d['nb_visits'],
-                                'name' => $v['label'],
-                                'percentage' => 0.0,
-                                'avg_time_on_site' => $d['avg_time_on_site'],
-                            ];
-                        }
-                    } elseif ($period === 'range') {
-                        $temp = [
-                            'name' => $d['label'],
-                            'count' => $d['nb_visits'],
-                            'percentage' => 0.0,
-                            'avg_time_on_site' => $d['avg_time_on_site'],
-                        ];
-                        $data[] = $temp;
-                    } else {
-                        return null;
-                    }
+                    $temp = [
+                        'name' => $d['label'],
+                        'count' => $d['nb_visits'],
+                        'percentage' => 0.0,
+                        'avg_time_on_site' => $d['avg_time_on_site'],
+                    ];
+                    $data[] = $temp;
+                } else {
+                    return null;
                 }
             }
             $data = MatomoHelper::calculateTotalAndPercentage($data);
