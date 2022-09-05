@@ -16,7 +16,7 @@ class MatomoHelper
         return '?' . http_build_query($params);
     }
 
-    public static function parseMatomoResponse(string $response): bool
+    public static function parseMatomoResponse(string $response): array
     {
         $matomoResAry = json_decode($response, true);
         if (!empty($matomoResAry) && isset($matomoResAry['result']) && $matomoResAry['result'] === 'error') {
@@ -24,7 +24,7 @@ class MatomoHelper
                 throw new CustomException($matomoResAry['message']);
             }
         }
-        return true;
+        return $matomoResAry;
     }
 
     public static function callApi($url)
