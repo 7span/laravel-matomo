@@ -103,4 +103,17 @@ interface MatomoInterface
      * @return array|mixed
      */
     public static function getCounterReport(int $matomoAnalyticsId, string $date, int $formSubmissionCount = null);
+
+    /**
+     * @param int $matomoAnalyticsId
+     * 
+     * @param string $slug
+     * 
+     * @param string $date
+     *
+     * @param bool $isSubPage
+     * 
+     * @return array|mixed
+     */
+    public static function getPagedCount(int $matomoAnalyticsId, string $slug, string $date, bool $isSubPage = false);
 }

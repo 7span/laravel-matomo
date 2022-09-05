@@ -94,4 +94,13 @@ class MatomoHelper
             return (float) number_format(($value / $total) * 100, 2);
         }
     }
+
+    public static function convertLabelFromSlug($slug, $isSubPage = false) {
+        $slug = str_replace("/"," > ",$slug);
+        $slugArray = explode(' > ',$slug);
+        if($isSubPage == 'true'){
+            $slugArray[count($slugArray)-1] = "@/".$slugArray[count($slugArray)-1];
+        }
+        return implode(' > ',$slugArray);
+    }
 }
