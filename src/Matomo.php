@@ -364,7 +364,7 @@ class Matomo implements MatomoInterface
      *
      * @return array|mixed
      */
-    private function getProcessedReport(int $matomoAnalyticsId, string $date)
+    private static function getProcessedReport(int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'API.getProcessedReport',
