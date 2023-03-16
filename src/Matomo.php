@@ -404,7 +404,7 @@ class Matomo implements MatomoInterface
      * https://analytics.page-maker.site/?module=API&method=Contents.getContentNames&idSite=32&period=range&date=2020-07-07,today&format=json&token_auth=c1752db0f01c3f9e4bd18e0bc2fafbc3&label=Product+Page
      * Use the reportTotal from the response as it is all pre calculated
      */
-    private function getContentCount($contentName, int $matomoAnalyticsId, string $date)
+    private static function getContentCount($contentName, int $matomoAnalyticsId, string $date)
     {
         $apiParams = [
             'method' => 'Contents.getContentNames',
