@@ -30,12 +30,9 @@
         }
     ],
     "require": {
-        "php": "^7.2.5||^8.0"
+        "php": "^7.2.5||^8.0||^8.1||^8.2"
     },
-    "require-dev": {
-        "psalm/plugin-laravel": "^1.2",
-        "vimeo/psalm": "^3.11"
-    },
+    "require-dev": {},
     "autoload": {
         "psr-4": {
             "SevenSpan\\Matomo\\": "src"
@@ -46,9 +43,7 @@
             "SevenSpan\\Matomo\\Tests\\": "tests"
         }
     },
-    "scripts": {
-        "psalm": "vendor/bin/psalm"
-    },
+    "scripts": {},
     "config": {
         "sort-packages": true,
         "allow-plugins": {
